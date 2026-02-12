@@ -1,0 +1,300 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<title>Magic Valentine 💖</title>
+
+<style>
+:root{
+  --pink:#f7a3c8;
+  --accent:#ff477e;
+  --dark:#0f0f16;
+}
+
+body{
+  margin:0;
+  height:100vh;
+  display:flex;
+  justify-content:center;
+  align-items:center;
+  background:var(--dark);
+  font-family:'Poppins', system-ui, sans-serif;
+  overflow:hidden;
+}
+
+/* POSDATA */
+.ps-global{
+  position:fixed;
+  bottom:12px;
+  right:14px;
+  font-size:10px;
+  color:var(--pink);
+  opacity:.6;
+  pointer-events:none;
+}
+
+/* SOBRE */
+.envelope{
+  width:340px;
+  height:220px;
+  background:#1c1c2b;
+  border-radius:16px;
+  cursor:pointer;
+  position:relative;
+}
+
+/* CARTA */
+.letter{
+  position:absolute;
+  width:320px;
+  height:340px;
+  background:var(--pink);
+  border-radius:20px;
+  top:10px;
+  left:50%;
+  transform:translateX(-50%) translateY(60px) scale(.95);
+  opacity:0;
+  transition:all 1.4s cubic-bezier(.19,1,.22,1);
+  z-index:2;
+  padding:20px;
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  gap:12px;
+}
+
+.envelope.reveal .letter{
+  transform:translateX(-50%) translateY(-220px) scale(1);
+  opacity:1;
+}
+
+/* EFECTO MAGIA */
+.glow{
+  position:absolute;
+  inset:-18px;
+  border-radius:26px;
+  opacity:0;
+  pointer-events:none;
+}
+
+.envelope.magic .glow{
+  animation:magicGlow 2.5s ease forwards;
+}
+
+@keyframes magicGlow{
+  0%{opacity:0; box-shadow:0 0 0 rgba(255,180,230,0);}
+  40%{opacity:1; box-shadow:0 0 40px rgba(255,180,230,.6);}
+  100%{opacity:.8; box-shadow:0 0 90px rgba(255,180,230,.9);}
+}
+
+h2{
+  margin:0;
+  color:#6a040f;
+}
+
+/* IMAGEN */
+.image-frame{
+  width:220px;
+  aspect-ratio:4/3;
+  border-radius:16px;
+  background:rgba(255,255,255,.35);
+  display:flex;
+  justify-content:center;
+  align-items:center;
+  overflow:hidden;
+}
+
+.image-frame img{
+  width:100%;
+  height:100%;
+  object-fit:contain;
+  opacity:0;
+  transform:scale(.85);
+  transition:.6s ease;
+}
+
+.image-frame.show img{
+  opacity:1;
+  transform:scale(1);
+  filter:drop-shadow(0 0 18px rgba(255,100,180,.7));
+}
+
+/* MENSAJE */
+.final-message{
+  font-size:14px;
+  color:#6a040f;
+  text-align:center;
+  opacity:0;
+  transform:translateY(8px);
+  transition:.6s ease;
+}
+
+.final-message.show{
+  opacity:1;
+  transform:translateY(0);
+}
+
+/* BOTONES */
+.buttons{
+  display:flex;
+  gap:18px;
+}
+
+.btn{
+  width:90px;
+  height:42px;
+  border-radius:22px;
+  border:none;
+  font-weight:600;
+  cursor:pointer;
+}
+
+.yes{
+  background:var(--accent);
+  color:white;
+}
+
+.no{
+  background:#eee;
+}
+
+/* CONTINUAR */
+.continue{
+  display:none;
+  margin-top:4px;
+  padding:10px 22px;
+  border-radius:24px;
+  border:none;
+  background:#ff477e;
+  color:white;
+  font-weight:600;
+  cursor:pointer;
+  box-shadow:0 8px 20px rgba(255,71,126,.45);
+}
+
+.continue.show{
+  display:inline-block;
+  text-decoration:none;
+}
+
+/* EMOJIS */
+.emoji{
+  position:fixed;
+  top:-40px;
+  font-size:28px;
+  pointer-events:none;
+  animation:fall linear forwards;
+}
+
+@keyframes fall{
+  to{
+    transform:translateY(120vh) rotate(360deg);
+    opacity:0;
+  }
+}
+</style>
+</head>
+
+<body>
+
+<div class="envelope" id="env">
+  <div class="glow"></div>
+
+  <div class="letter">
+    <h2>¿Quieres ser mi Valentín? 💖</h2>
+
+    <div class="image-frame" id="frame">
+      <img id="resultImg">
+    </div>
+
+    <p class="final-message" id="finalMsg">
+      Sabía que dirías que sí 💕
+    </p>
+
+    <div class="buttons">
+      <button class="btn yes" id="yes">Sí 💖</button>
+      <button class="btn no" id="no">No</button>
+    </div>
+
+    <!-- CONTINUAR CON HREF -->
+    <a href="SanValentin.pdf" target="_blank" class="continue" id="continueBtn">
+      Continuar ✨
+    </a>
+  </div>
+</div>
+
+<div class="ps-global">
+  Posdata: puedes programar lo que te puedas imaginar ✨
+</div>
+
+<script>
+const env = document.getElementById('env');
+const btnYes = document.getElementById('yes');
+const btnNo = document.getElementById('no');
+const frame = document.getElementById('frame');
+const img = document.getElementById('resultImg');
+const msg = document.getElementById('finalMsg');
+const contBtn = document.getElementById('continueBtn');
+
+/* IMÁGENES */
+const IMG_START = './img/duda.png';
+const IMG_YES   = './img/happy.png';
+const IMG_NO    = './img/sad.png';
+
+env.onclick = ()=>{
+  if(env.classList.contains('reveal')) return;
+
+  setTimeout(()=>{
+    env.classList.add('reveal');
+    showImage(IMG_START);
+  },300);
+
+  setTimeout(()=>env.classList.add('magic'),900);
+};
+
+/* SÍ */
+btnYes.onclick = e =>{
+  e.stopPropagation();
+  showImage(IMG_YES);
+  rain(['💖','✨','💕','💘','🌸']);
+  msg.classList.add('show');
+  contBtn.classList.add('show');
+};
+
+/* NO */
+btnNo.onclick = e =>{
+  e.stopPropagation();
+  moveNo();
+  showImage(IMG_NO);
+  rain(['😤','💀','😡','👺','🤬']);
+};
+
+function showImage(src){
+  frame.classList.remove('show');
+  setTimeout(()=>{
+    img.src = src;
+    frame.classList.add('show');
+  },120);
+}
+
+function moveNo(){
+  const x=(Math.random()*2-1)*80;
+  const y=(Math.random()*2-1)*25;
+  btnNo.style.transform=`translate(${x}px,${y}px)`;
+}
+
+function rain(list){
+  for(let i=0;i<26;i++){
+    const e=document.createElement('div');
+    e.className='emoji';
+    e.textContent=list[Math.floor(Math.random()*list.length)];
+    e.style.left=Math.random()*100+'vw';
+    e.style.animationDuration=(2+Math.random()*2)+'s';
+    document.body.appendChild(e);
+    setTimeout(()=>e.remove(),4000);
+  }
+}
+</script>
+
+</body>
+</html>
